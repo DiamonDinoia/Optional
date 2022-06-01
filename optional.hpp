@@ -20,6 +20,8 @@
 
 # define TR2_OPTIONAL_REQUIRES(...) typename enable_if<__VA_ARGS__::value, bool>::type = false
 
+#ifdef ENABLE_WORKAROUNDS
+
 # if defined __GNUC__ // NOTE: GNUC is also defined for Clang
 #   if (__GNUC__ == 4) && (__GNUC_MINOR__ >= 8)
 #     define TR2_OPTIONAL_GCC_4_8_AND_HIGHER___
@@ -97,9 +99,19 @@
 #   define OPTIONAL_MUTABLE_CONSTEXPR constexpr
 # endif
 
+#else
+#   define OPTIONAL_HAS_THIS_RVALUE_REFS 1
+#   define OPTIONAL_HAS_CONSTEXPR_INIT_LIST 1
+#   define OPTIONAL_HAS_MOVE_ACCESSORS 1
+#   define OPTIONAL_CONSTEXPR_INIT_LIST constexpr
+#   define OPTIONAL_MUTABLE_CONSTEXPR constexpr
+#endif
+
 namespace std{
 
 namespace experimental{
+
+#ifdef ENABLE_WORKAROUNDS
 
 // BEGIN workaround for missing is_trivially_destructible
 # if defined TR2_OPTIONAL_GCC_4_8_AND_HIGHER___
@@ -169,6 +181,7 @@ struct is_nothrow_move_assignable
 
 # endif
 
+#endif
 
 
 // 20.5.4, optional for object types
